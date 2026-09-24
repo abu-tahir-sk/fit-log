@@ -1,5 +1,7 @@
 # FitLog
 
+- live link site - https://fit-log-two-alpha.vercel.app/
+
 FitLog is a dark, no-nonsense gym companion app. It allows users to browse a library of intense workouts, view detailed instructions, and log their daily routines into a personalized plan.
 
 ## Technologies Used
