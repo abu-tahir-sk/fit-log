@@ -50,7 +50,7 @@ export default function Navbar() {
           </Link>
         </div>
         
-        {/* Updated: This entire div is now a Link to /my-plan */}
+        
         <Link href="/my-plan" className="ml-auto flex items-center gap-3 sm:gap-6 hover:opacity-80 transition-opacity">
           <div className="flex items-center gap-1.5 sm:gap-2">
             <span className="text-[13px] text-[#a5a6ad] sm:text-[15px]">

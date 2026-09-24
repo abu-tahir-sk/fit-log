@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Clock3, Flame, X, ChevronDown, Check, Search } from "lucide-react";
+import { Clock3, Flame, X, ChevronDown, Check, Star } from "lucide-react";
 import { useContext, useState, useEffect } from "react";
 import { PlanContext } from "../context/PlanContext";
 import type { Workout } from "../types/workout";
@@ -12,11 +12,14 @@ export default function MyPlanPage() {
   const { plan, setPlan, saved, setSaved } = useContext(PlanContext);
   const [activeTab, setActiveTab] = useState<"plan" | "saved">("plan");
   const [sortBy, setSortBy] = useState("duration");
-  const [searchQuery, setSearchQuery] = useState("");
   const [isMounted, setIsMounted] = useState(false);
 
+  // Load state asynchronously to bypass synchronous setState warning
   useEffect(() => {
-    setIsMounted(true);
+    const timeoutId = setTimeout(() => {
+      setIsMounted(true);
+    }, 0);
+    return () => clearTimeout(timeoutId);
   }, []);
 
   const cleanPlan = plan.filter(
@@ -49,10 +52,8 @@ export default function MyPlanPage() {
   const markAsDone = (id: number, name: string) => {
     if (activeTab === "plan") {
       setPlan(cleanPlan.filter((workout) => workout.id !== id));
-    } else {
-      setSaved(cleanSaved.filter((workout) => workout.id !== id));
+      toast.success(`Awesome! ${name} marked as done. 💪`);
     }
-    toast.success(`Awesome! ${name} marked as done. 💪`);
   };
 
   const currentList = (activeTab === "plan" ? cleanPlan : cleanSaved).sort(
@@ -70,15 +71,6 @@ export default function MyPlanPage() {
     }
   );
 
-  // Search filter logic
-  const filteredList = currentList.filter((workout) => {
-    const query = searchQuery.toLowerCase();
-    return (
-      workout.name.toLowerCase().includes(query) ||
-      workout.muscleGroups.some((m) => m.toLowerCase().includes(query))
-    );
-  });
-
   if (!isMounted) {
     return (
       <main className="min-h-screen bg-[#0d0e10] flex items-center justify-center">
@@ -92,47 +84,49 @@ export default function MyPlanPage() {
   return (
     <main className="min-h-screen bg-[#0d0e10] px-5 py-10 sm:px-8 lg:px-10">
       <div className="mx-auto max-w-[1400px]">
-        <div className="mb-6">
-          <h1 className="text-[30px] font-black uppercase tracking-[-0.03em] text-white sm:text-[32px]">
+        {/* Header Section */}
+        <div className="mb-8">
+          <h1 className="text-[32px] font-black uppercase tracking-tight text-white sm:text-[36px]">
             MY PLAN
           </h1>
-          <p className="mt-2 text-[13px] text-[#8d919b]">
+          <p className="mt-1 text-[14px] text-[#858994]">
             Cap of five lifts for today. Finish them, then load more.
           </p>
         </div>
         
+      
         <div className="rounded-2xl border border-[#24272e] bg-[#121419] px-6 py-7 sm:px-8">
-          <div className="grid grid-cols-1 divide-y divide-[#24272e] sm:grid-cols-3 sm:divide-x sm:divide-y-0">
-            <div className="pb-5 sm:px-5 sm:pb-0 sm:pl-0">
-              <p className="text-[11px] text-[#858994]">Exercises</p>
-              <p className="mt-1 text-[36px] font-black leading-none text-[#c8ff00]">
+          <div className="grid grid-cols-1 gap-6 divide-y divide-[#24272e] sm:grid-cols-3 sm:gap-0 sm:divide-x sm:divide-y-0">
+            <div className="pb-2 sm:px-5 sm:pb-0 sm:pl-0">
+              <p className="text-[13px] text-[#858994]">Exercises</p>
+              <p className="mt-2 text-[40px] font-black leading-none text-[#c8ff00]">
                 {cleanPlan.length}
               </p>
             </div>
-            <div className="py-5 sm:px-7 sm:py-0">
-              <p className="text-[11px] text-[#858994]">Minutes</p>
-              <p className="mt-1 text-[36px] font-black leading-none text-white">
+            <div className="py-4 sm:px-8 sm:py-0">
+              <p className="text-[13px] text-[#858994]">Minutes</p>
+              <p className="mt-2 text-[40px] font-black leading-none text-white">
                 {minutes}
               </p>
             </div>
-            <div className="pt-5 sm:px-7 sm:pt-0">
-              <p className="text-[11px] text-[#858994]">Calories</p>
-              <p className="mt-1 text-[36px] font-black leading-none text-white">
+            <div className="pt-4 sm:px-8 sm:pt-0">
+              <p className="text-[13px] text-[#858994]">Calories</p>
+              <p className="mt-2 text-[40px] font-black leading-none text-white">
                 {calories}
               </p>
             </div>
           </div>
         </div>
         
-        {/* Actions Row: Tabs, Search, Sort */}
-        <div className="mt-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div className="inline-flex w-fit rounded-xl border border-[#24272e] bg-[#15171c] p-1">
+       
+        <div className="mt-10 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+          <div className="inline-flex w-fit rounded-xl border border-[#24272e] bg-[#121419] p-1.5">
             <button
               type="button"
               onClick={() => setActiveTab("plan")}
-              className={`rounded-lg px-5 py-2 text-[12px] font-medium transition ${
+              className={`rounded-lg px-6 py-2.5 text-[13px] font-medium transition ${
                 activeTab === "plan"
-                  ? "bg-[#20242c] text-white"
+                  ? "bg-[#1f2229] text-white"
                   : "text-[#7e828c] hover:text-white"
               }`}
             >
@@ -141,9 +135,9 @@ export default function MyPlanPage() {
             <button
               type="button"
               onClick={() => setActiveTab("saved")}
-              className={`rounded-lg px-5 py-2 text-[12px] font-medium transition ${
+              className={`rounded-lg px-6 py-2.5 text-[13px] font-medium transition ${
                 activeTab === "saved"
-                  ? "bg-[#20242c] text-white"
+                  ? "bg-[#1f2229] text-white"
                   : "text-[#7e828c] hover:text-white"
               }`}
             >
@@ -151,128 +145,112 @@ export default function MyPlanPage() {
             </button>
           </div>
           
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-            {/* Search Bar */}
+          <div className="flex items-center gap-3">
+            <span className="text-[13px] text-[#858994]">Sort By</span>
             <div className="relative">
-              <Search
-                size={14}
-                className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#858994]"
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="appearance-none rounded-xl border border-[#24272e] bg-[#121419] py-2.5 pl-4 pr-10 text-[13px] text-white outline-none"
+              >
+                <option value="duration">Duration</option>
+                <option value="calories">Calories</option>
+                <option value="rating">Rating</option>
+              </select>
+              <ChevronDown
+                size={16}
+                className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#858994]"
               />
-              <input
-                type="text"
-                placeholder="Search by name or tag..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full rounded-xl border border-[#30333b] bg-[#15171c] py-2 pl-9 pr-4 text-[12px] text-white outline-none placeholder:text-[#6a6d75] focus:border-[#c8ff00] sm:w-[250px]"
-              />
-            </div>
-
-            <div className="flex items-center gap-2">
-              <span className="text-[11px] text-[#858994]">Sort By</span>
-              <div className="relative">
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="appearance-none rounded-xl border border-[#30333b] bg-[#15171c] py-2 pl-4 pr-9 text-[12px] text-white outline-none"
-                >
-                  <option value="duration">Duration</option>
-                  <option value="calories">Calories</option>
-                  <option value="rating">Rating</option>
-                </select>
-                <ChevronDown
-                  size={14}
-                  className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#858994]"
-                />
-              </div>
             </div>
           </div>
         </div>
         
-        {filteredList.length === 0 ? (
-          <div className="mt-5 flex min-h-[275px] flex-col items-center justify-center rounded-2xl border border-dashed border-[#25282f] bg-[#0f1115] px-5 text-center">
+        
+        {currentList.length === 0 ? (
+          <div className="mt-6 flex min-h-[275px] flex-col items-center justify-center rounded-2xl border border-[#24272e] bg-[#121419] px-5 text-center">
             <h2 className="text-[19px] font-black uppercase text-white">
               NOTHING HERE YET
             </h2>
-            <p className="mt-2 text-[12px] text-[#858994]">
-              {searchQuery ? "No workouts found matching your search." : "Browse the library and add a lift to get today moving."}
+            <p className="mt-2 text-[13px] text-[#858994]">
+              Browse the library and add a lift to get today moving.
             </p>
-            {!searchQuery && (
-              <Link
-                href="/#library"
-                className="mt-5 rounded-full bg-[#c8ff00] px-6 py-3 text-[11px] font-bold text-[#0d0e10]"
-              >
-                Go to workouts
-              </Link>
-            )}
+            <Link
+              href="/#library"
+              className="mt-6 rounded-full bg-[#c8ff00] px-6 py-3 text-[12px] font-bold text-[#0d0e10]"
+            >
+              Go to workouts
+            </Link>
           </div>
         ) : (
-          <div className="mt-5 space-y-3">
-            {filteredList.map((workout) => (
+          <div className="mt-6 space-y-4">
+            {currentList.map((workout) => (
               <div
                 key={workout.id}
-                className="flex flex-col gap-4 rounded-2xl border border-[#24272e] bg-[#15171c] p-4 sm:flex-row sm:items-center"
+                className="flex flex-col gap-4 rounded-2xl border border-[#24272e] bg-[#121419] p-5 sm:flex-row sm:items-center sm:justify-between"
               >
-                <div className="relative h-24 w-full shrink-0 overflow-hidden rounded-xl sm:w-36">
-                  <Image
-                    src={workout.image}
-                    alt={workout.name}
-                    fill
-                    unoptimized
-                    sizes="144px"
-                    className="object-cover"
-                  />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap gap-2">
-                    {workout.muscleGroups.map((muscle) => (
-                      <span
-                        key={muscle}
-                        className="rounded-full bg-[#c8ff00] px-2.5 py-1 text-[9px] font-bold uppercase text-[#0d0e10]"
-                      >
-                        {muscle}
-                      </span>
-                    ))}
+                
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-5">
+                  <div className="relative h-[85px] w-full shrink-0 overflow-hidden rounded-xl sm:w-[150px]">
+                    <Image
+                      src={workout.image}
+                      alt={workout.name}
+                      fill
+                      unoptimized
+                      sizes="150px"
+                      className="object-cover"
+                    />
                   </div>
-                  <h3 className="mt-2 text-[16px] font-black uppercase text-white">
-                    {workout.name}
-                  </h3>
-                  <p className="mt-1 text-[12px] text-[#777b85]">
-                    {workout.equipment}
-                  </p>
-                  <div className="mt-3 flex flex-wrap gap-4 text-[11px] text-[#8e929c]">
-                    <span className="flex items-center gap-1.5">
-                      <Clock3 size={13} />
-                      {workout.duration} min
-                    </span>
-                    <span className="flex items-center gap-1.5">
-                      <Flame size={13} />
-                      {workout.caloriesBurned} kcal
-                    </span>
+                  <div className="flex flex-col">
+                    <h3 className="text-[18px] font-black uppercase tracking-tight text-white">
+                      {workout.name}
+                    </h3>
+                    <p className="mt-1 text-[13px] text-[#858994]">
+                      {workout.equipment}
+                    </p>
+                    <div className="mt-3 flex items-center gap-4 text-[12px] font-medium text-[#a5a6ad]">
+                      <span className="flex items-center gap-1.5">
+                        <Clock3 size={14} className="text-[#c8ff00]" />
+                        {workout.duration} min
+                      </span>
+                      <span className="flex items-center gap-1.5">
+                        <Flame size={14} className="text-[#c8ff00]" />
+                        {workout.caloriesBurned} kcal
+                      </span>
+                      <span className="flex items-center gap-1.5">
+                        <Star size={14} className="text-yellow-400" />
+                        {workout.rating}
+                      </span>
+                    </div>
                   </div>
                 </div>
                 
-                <div className="flex items-center gap-2">
+               
+                <div className="flex items-center gap-3 self-end sm:self-auto">
                   <Link
                     href={`/workouts/${workout.id}`}
-                    className="rounded-lg border border-[#343740] px-4 py-2.5 text-[10px] font-bold uppercase text-white transition hover:border-[#c8ff00] hover:text-[#c8ff00]"
+                    className="rounded-full border border-[#343740] px-5 py-2.5 text-[12px] font-medium text-white transition hover:bg-[#1f2229]"
                   >
                     View Details
                   </Link>
-                  <button
-                    type="button"
-                    title="Mark as Done"
-                    onClick={() => markAsDone(workout.id, workout.name)}
-                    className="rounded-lg border border-[#343740] p-2.5 text-[#777b85] transition hover:border-[#c8ff00] hover:text-[#c8ff00]"
-                  >
-                    <Check size={16} />
-                  </button>
+                  
+                  {activeTab === "plan" && (
+                    <button
+                      type="button"
+                      title="Mark as Done"
+                      onClick={() => markAsDone(workout.id, workout.name)}
+                      className="flex items-center gap-2 rounded-full bg-[#c8ff00] px-5 py-2.5 text-[12px] font-bold text-[#0d0e10] transition hover:bg-[#b7ed00]"
+                    >
+                      <Check size={16} strokeWidth={3} /> Mark as Done
+                    </button>
+                  )}
+                  
                   <button
                     type="button"
                     title="Remove"
                     onClick={() => removeWorkout(workout.id, workout.name)}
-                    className="rounded-lg border border-[#343740] p-2.5 text-[#777b85] transition hover:border-red-400 hover:text-red-400"
+                    className="p-2 text-[#777b85] transition hover:text-red-400"
                   >
-                    <X size={16} />
+                    <X size={20} />
                   </button>
                 </div>
               </div>

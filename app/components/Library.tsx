@@ -23,7 +23,7 @@ export default async function Library() {
       className="px-3 py-10 sm:px-4 sm:py-14 lg:px-6 lg:py-16"
     >
       <div className="mx-auto max-w-[1400px]">
-        {/* We pass the fetched data to our client component */}
+       
         <LibraryClient workouts={workouts} />
       </div>
     </section>
