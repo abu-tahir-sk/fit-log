@@ -1,90 +1,112 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
-
-const navLinks = [
-      {
-            name: "Workouts",
-            href: "/workouts",
-      },
-      {
-            name: "My Plan",
-            href: "/my-plan",
-      },
-];
+import { useState } from "react";
 
 export default function Navbar() {
-      const pathname = usePathname();
+  const pathname = usePathname();
+  const [menuOpen, setMenuOpen] = useState(false);
 
-      return (
-            <nav className="h-16 w-full border-b border-[#1d1e22] bg-[#0d0e10]">
-                  <div className="mx-auto flex h-full max-w-[1400px] items-center justify-between px-5">
+  return (
+    <nav className="relative h-[74px] w-full border-b border-[#1d1e22] bg-[#0d0e10]">
+      <div className="mx-auto flex h-full w-full max-w-[1400px] items-center px-4 sm:px-6">
+        <Link href="/" className="flex shrink-0 items-center">
+          <Image
+            src="/logo.png"
+            alt="FitLog"
+            width={91}
+            height={32}
+            className="h-8 w-[91px] object-contain"
+            priority
+          />
+          <span className="text-[13px] font-bold tracking-[0.14em] text-white sm:text-[15px]">
+            FITLOG
+          </span>
+        </Link>
 
-                        {/* Logo */}
-                        <Link
-                              href="/"
-                              className="flex items-center gap-2 text-white"
-                        >
-                              <div className="relative h-8 w-8 overflow-hidden rounded-full border border-[#2a2d31] bg-[#121417]">
-                                    <Image
-                                          src="/logo.png"
-                                          alt="Fitlog logo"
-                                          fill
-                                          sizes="32px"
-                                          className="object-cover"
-                                    />
-                              </div>
+        <div className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-1 md:flex">
+          <Link
+            href="/"
+            className={`rounded-full px-4 py-2 text-[15px] font-medium transition ${pathname === "/"
+                ? "bg-[#17240b] text-[#c8ff00]"
+                : "text-[#9a9ca3] hover:text-white"
+              }`}
+          >
+            Workouts
+          </Link>
 
-                              <span className="text-[15px] font-extrabold tracking-wide">
-                                    FITLOG
-                              </span>
-                        </Link>
+          <Link
+            href="/my-plan"
+            className={`rounded-full px-4 py-2 text-[15px] font-medium transition ${pathname === "/my-plan"
+                ? "bg-[#17240b] text-[#c8ff00]"
+                : "text-[#9a9ca3] hover:text-white"
+              }`}
+          >
+            My Plan
+          </Link>
+        </div>
 
-                        {/* Navigation */}
-                        <div className="absolute left-1/2 flex -translate-x-1/2 items-center gap-1">
-                              {navLinks.map((link) => {
-                                    const isActive = pathname === link.href;
+        <div className="ml-auto flex items-center gap-3 sm:gap-6">
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <span className="text-[13px] text-[#a5a6ad] sm:text-[15px]">
+              Plan
+            </span>
+            <span className="flex h-[19px] min-w-[19px] items-center justify-center rounded-full bg-[#c8ff00] px-1 text-[11px] font-semibold text-[#0d0e10]">
+              0
+            </span>
+          </div>
 
-                                    return (
-                                          <Link
-                                                key={link.href}
-                                                href={link.href}
-                                                className={`rounded-full px-4 py-1.5 text-[11px] transition-all duration-200 ${isActive
-                                                            ? "bg-[#18220b] font-semibold text-[#ccff00]"
-                                                            : "text-[#85878c] hover:text-white"
-                                                      }`}
-                                          >
-                                                {link.name}
-                                          </Link>
-                                    );
-                              })}
-                        </div>
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <span className="text-[13px] text-[#a5a6ad] sm:text-[15px]">
+              Saved
+            </span>
+            <span className="flex h-[19px] min-w-[19px] items-center justify-center rounded-full border border-[#303239] px-1 text-[11px] text-[#a5a6ad]">
+              0
+            </span>
+          </div>
 
-                        {/* Right Status */}
-                        <div className="flex items-center gap-5 text-[11px]">
+          <button
+            type="button"
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="flex h-9 w-9 items-center justify-center rounded-md border border-[#303239] text-[#c8ff00] md:hidden"
+            aria-label="Toggle menu"
+          >
+            <span className="text-xl leading-none">
+              {menuOpen ? "×" : "☰"}
+            </span>
+          </button>
+        </div>
+      </div>
 
-                              {/* Plan */}
-                              <div className="flex items-center gap-2 text-[#d5d5d8]">
-                                    <span>Plan</span>
+      {menuOpen && (
+        <div className="absolute left-0 top-[74px] z-50 w-full border-b border-[#24272d] bg-[#0d0e10] px-4 py-4 shadow-xl md:hidden">
+          <div className="flex flex-col gap-2">
+            <Link
+              href="/"
+              onClick={() => setMenuOpen(false)}
+              className={`rounded-lg px-4 py-3 text-[15px] font-medium ${pathname === "/"
+                  ? "bg-[#17240b] text-[#c8ff00]"
+                  : "text-[#9a9ca3] hover:bg-[#15171c] hover:text-white"
+                }`}
+            >
+              Workouts
+            </Link>
 
-                                    <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-[#ccff00] px-1 text-[9px] font-bold text-black">
-                                          0
-                                    </span>
-                              </div>
-
-                              {/* Saved */}
-                              <div className="flex items-center gap-2 text-[#d5d5d8]">
-                                    <span>Saved</span>
-
-                                    <span className="flex h-4 min-w-4 items-center justify-center rounded-full border border-[#303238] px-1 text-[9px] text-[#85878c]">
-                                          0
-                                    </span>
-                              </div>
-
-                        </div>
-                  </div>
-            </nav>
-      );
+            <Link
+              href="/my-plan"
+              onClick={() => setMenuOpen(false)}
+              className={`rounded-lg px-4 py-3 text-[15px] font-medium ${pathname === "/my-plan"
+                  ? "bg-[#17240b] text-[#c8ff00]"
+                  : "text-[#9a9ca3] hover:bg-[#15171c] hover:text-white"
+                }`}
+            >
+              My Plan
+            </Link>
+          </div>
+        </div>
+      )}
+    </nav>
+  );
 }
